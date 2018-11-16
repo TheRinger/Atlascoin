@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#  atlasd The atlas core server.
+#
+#
+# chkconfig: 345 80 20
+# description: atlasd
+# processname: atlasd
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# you can override defaults in /etc/sysconfig/atlasd, see below
+if [ -f /etc/sysconfig/atlasd ]; then
+        . /etc/sysconfig/atlasd
+fi
+
+RETVAL=0
+
+prog=atlasd
+# you can override the lockfile via ATLASD_LOCKFILE in /etc/sysconfig/atlasd
+lockfile=${ATLASD_LOCKFILE-/var/lock/subsys/atlasd}
+
+# atlasd defaults to /usr/bin/atlasd, override with ATLASD_BIN
+atlasd=${ATLASD_BIN-/usr/bin/atlasd}
+
+# atlasd opts default to -disablewallet, override with ATLASD_OPTS
+atlasd_opts=${ATLASD_OPTS--disablewallet}
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $DAEMONOPTS $atlasd $atlasd_opts
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $prog
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: service $prog {start|stop|status|restart}"
+        exit 1
+        ;;
+esac

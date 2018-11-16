@@ -1,0 +1,6 @@
+usr/local/bin/atlas-qt usr/bin
+share/pixmaps/atlas32.xpm usr/share/pixmaps
+share/pixmaps/atlas16.xpm usr/share/pixmaps
+share/pixmaps/atlas128.png usr/share/pixmaps
+debian/atlas-qt.desktop usr/share/applications
+debian/atlas-qt.protocol usr/share/kde4/services/

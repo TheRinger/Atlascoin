@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Atlas Core
+Comment=Connect to the Atlas P2P Network
+Comment[de]=Verbinde mit dem Atlas peer-to-peer Netzwerk
+Comment[fr]=Atlas, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Atlas, eşten eşe kriptografik sanal para birimi
+Exec=atlas-qt %u
+Terminal=false
+Type=Application
+Icon=atlas128
+MimeType=x-scheme-handler/atlas;
+Categories=Office;Finance;

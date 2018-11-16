@@ -1,0 +1,22 @@
+[Unit]
+Description=Atlas's distributed currency daemon
+After=network.target
+
+[Service]
+User=atlas
+Group=atlas
+
+Type=forking
+PIDFile=/var/lib/atlasd/atlasd.pid
+ExecStart=/usr/bin/atlasd -daemon -pid=/var/lib/atlasd/atlasd.pid \
+-conf=/etc/atlas/atlas.conf -datadir=/var/lib/atlasd -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

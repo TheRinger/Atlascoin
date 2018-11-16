@@ -1,0 +1,33 @@
+# /etc/conf.d/atlasd: config file for /etc/init.d/atlasd
+
+# Config file location
+#ATLASD_CONFIGFILE="/etc/atlas/atlas.conf"
+
+# What directory to write pidfile to?  (created and owned by $ATLASD_USER)
+#ATLASD_PIDDIR="/var/run/atlasd"
+
+# What filename to give the pidfile
+#ATLASD_PIDFILE="${ATLASD_PIDDIR}/atlasd.pid"
+
+# Where to write atlasd data (be mindful that the blockchain is large)
+#ATLASD_DATADIR="/var/lib/atlasd"
+
+# User and group to own atlasd process
+#ATLASD_USER="atlas"
+#ATLASD_GROUP="atlas"
+
+# Path to atlasd executable
+#ATLASD_BIN="/usr/bin/atlasd"
+
+# Nice value to run atlasd under
+#ATLASD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#ATLASD_OPTS=""
+
+# The timeout in seconds OpenRC will wait for atlasd to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+ATLASD_SIGTERM_TIMEOUT=60

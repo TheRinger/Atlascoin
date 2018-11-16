@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/atlas/.atlas" ]; then
+	ATLASD_DEFAULT_DATADIR="/var/lib/atlas/.atlas"
+else
+	ATLASD_DEFAULT_DATADIR="/var/lib/atlasd"
+fi
+
+ATLASD_CONFIGFILE=${ATLASD_CONFIGFILE:-/etc/atlas/atlas.conf}
+ATLASD_PIDDIR=${ATLASD_PIDDIR:-/var/run/atlasd}
+ATLASD_PIDFILE=${ATLASD_PIDFILE:-${ATLASD_PIDDIR}/atlasd.pid}
+ATLASD_DATADIR=${ATLASD_DATADIR:-${ATLASD_DEFAULT_DATADIR}}
+ATLASD_USER=${ATLASD_USER:-${ATLAS_USER:-atlas}}
+ATLASD_GROUP=${ATLASD_GROUP:-atlas}
+ATLASD_BIN=${ATLASD_BIN:-/usr/bin/atlasd}
+ATLASD_NICE=${ATLASD_NICE:-${NICELEVEL:-0}}
+ATLASD_OPTS="${ATLASD_OPTS:-${ATLAS_OPTS}}"
+
+name="Atlas Core Daemon"
+description="Atlas cryptocurrency P2P network daemon"
+
+command="/usr/bin/atlasd"
+command_args="-pid=\"${ATLASD_PIDFILE}\" \
+		-conf=\"${ATLASD_CONFIGFILE}\" \
+		-datadir=\"${ATLASD_DATADIR}\" \
+		-daemon \
+		${ATLASD_OPTS}"
+
+required_files="${ATLASD_CONFIGFILE}"
+start_stop_daemon_args="-u ${ATLASD_USER} \
+			-N ${ATLASD_NICE} -w 2000"
+pidfile="${ATLASD_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${ATLASD_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${ATLASD_USER}:${ATLASD_GROUP}" \
+	"${ATLASD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${ATLASD_USER}:${ATLASD_GROUP}" \
+	"${ATLASD_PIDDIR}"
+
+	checkpath -f \
+	-o ${ATLASD_USER}:${ATLASD_GROUP} \
+	-m 0660 \
+	${ATLASD_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${ATLASD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run atlasd."
+		eerror "The setting must appear in ${ATLASD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Atlas Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+find ./ -type f -exec sed -i -e 's/atlascoin/atlascoin/g' {} \;
+find ./ -type f -exec sed -i -e 's/Atlascoin/Atlascoin/g' {} \;
+find ./ -type f -exec sed -i -e 's/AtlasCoin/AtlasCoin/g' {} \;
+find ./ -type f -exec sed -i -e 's/ATLASCOIN/ATLASCOIN/g' {} \;
+find ./ -type f -exec sed -i -e 's/ATLAS/ATLAS/g' {} \;
+find ./ -type f -exec sed -i -e 's/Atlas/Atlas/g' {} \;
+find ./ -type f -exec sed -i -e 's/atlas/atlas/g' {} \;
+find ./ -type f -exec sed -i -e 's/ATL/ATL/g' {} \;

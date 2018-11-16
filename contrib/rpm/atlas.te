@@ -1,0 +1,81 @@
+policy_module(atlas, 1.100.1)
+
+########################################
+#
+# Declarations
+#
+
+type atlas_t;
+type atlas_exec_t;
+init_daemon_domain(atlas_t, atlas_exec_t)
+
+permissive atlas_t;
+
+type atlas_initrc_exec_t;
+init_script_file(atlas_initrc_exec_t)
+
+type atlas_conf_t;
+files_type(atlas_conf_t)
+
+type atlas_var_lib_t;
+files_type(atlas_var_lib_t)
+
+type atlas_var_run_t;
+files_type(atlas_var_run_t)
+
+type atlas_port_t;
+corenet_port(atlas_port_t)
+
+########################################
+#
+# atlas local policy
+#
+allow atlas_t self:process { fork };
+
+allow atlas_t self:fifo_file rw_fifo_file_perms;
+allow atlas_t self:unix_stream_socket create_stream_socket_perms;
+
+manage_dirs_pattern(atlas_t, atlas_conf_t, atlas_conf_t)
+manage_files_pattern(atlas_t, atlas_conf_t, atlas_conf_t)
+
+manage_dirs_pattern(atlas_t, atlas_var_lib_t, atlas_var_lib_t)
+manage_files_pattern(atlas_t, atlas_var_lib_t, atlas_var_lib_t)
+files_var_lib_filetrans(atlas_t, atlas_var_lib_t, { dir file })
+
+manage_dirs_pattern(atlas_t, atlas_var_run_t, atlas_var_run_t)
+manage_files_pattern(atlas_t, atlas_var_run_t, atlas_var_run_t)
+
+sysnet_dns_name_resolve(atlas_t)
+corenet_all_recvfrom_unlabeled(atlas_t)
+
+allow atlas_t self:tcp_socket create_stream_socket_perms;
+corenet_tcp_sendrecv_generic_if(atlas_t)
+corenet_tcp_sendrecv_generic_node(atlas_t)
+corenet_tcp_sendrecv_all_ports(atlas_t)
+corenet_tcp_bind_generic_node(atlas_t)
+
+gen_require(`
+    type atlas_port_t;
+')
+allow atlas_t atlas_port_t:tcp_socket name_bind;
+
+gen_require(`
+    type atlas_port_t;
+')
+allow atlas_t atlas_port_t:tcp_socket name_connect;
+
+domain_use_interactive_fds(atlas_t)
+
+files_read_etc_files(atlas_t)
+
+miscfiles_read_localization(atlas_t)
+
+sysnet_dns_name_resolve(atlas_t)
+
+allow atlas_t atlas_exec_t:file execute_no_trans;
+allow atlas_t self:process setsched;
+corecmd_exec_ls(atlas_t)
+corenet_tcp_connect_http_port(atlas_t)
+dev_read_urand(atlas_t)
+fs_getattr_xattr_fs(atlas_t)
+kernel_read_system_state(atlas_t)

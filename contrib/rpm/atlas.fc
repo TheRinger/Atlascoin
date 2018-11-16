@@ -1,0 +1,8 @@
+/usr/bin/atlas-cli		--	gen_context(system_u:object_r:atlas_exec_t,s0)
+/usr/sbin/atlasd		--	gen_context(system_u:object_r:atlas_exec_t,s0)
+/usr/lib(64)?/atlas/atlasd		--	gen_context(system_u:object_r:atlas_exec_t,s0)
+
+/etc/atlas(/.*)?		gen_context(system_u:object_r:atlas_conf_t,s0)
+/var/lib/atlas(/.*)?		gen_context(system_u:object_r:atlas_var_lib_t,s0)
+
+(/var)?/run/atlasd(/.*)?   gen_context(system_u:object_r:atlas_var_run_t,s0)
